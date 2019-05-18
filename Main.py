@@ -25,7 +25,10 @@ def init(screen):
 
 		screen.fill((255, 255, 255))
 
-		pygame.draw.rect(screen, (0, 0, 0), track)
+
+		#track = pygame.Rect(200, 200, 3, 200)
+
+		#pygame.draw.rect(screen, (0, 0, 0), track)
 
 		player.draw(screen)
 		player.handle_keys()	
