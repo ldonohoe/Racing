@@ -12,7 +12,7 @@ def init():
 	degree = 0
 	done = False
 	screen = pygame.display.set_mode((width, height))
-	innerPoints = Tracks.TRACKS[1]
+	innerPoints = Tracks.TRACKS[1][0]
 	outerPoints = []
 	while not done:
 		screen.fill((0, 0, 0))

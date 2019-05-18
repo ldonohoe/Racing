@@ -1,4 +1,5 @@
 import pygame
+from Tracks import TRACKS
 from math import *
 from Player import Player
 
@@ -24,15 +25,10 @@ def init(screen):
 
 		screen.fill((255, 255, 255))
 
-		track = pygame.Rect(200, 200, 3, 200)
-
 		pygame.draw.rect(screen, (0, 0, 0), track)
 
 		player.draw(screen)
-		player.handle_keys()
-		if player.location.colliderect(track):
-			print("Word")
-		
+		player.handle_keys()	
 		player.update_player()
 		pygame.display.update()
 
@@ -41,6 +37,7 @@ def init(screen):
 
 def main():
 	size = width, height = 800, 800
+	pygame.init()
 	screen = pygame.display.set_mode(size)
 	init(screen)
 

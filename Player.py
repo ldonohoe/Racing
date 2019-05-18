@@ -13,7 +13,7 @@ class Player(object):
 		self.velocity = 0
 		self.screenWidth = screen.get_width()
 		self.screenHeight = screen.get_height()
-		self.location = self.rect
+		self.position = self.rect
 
 
 	def update_player(self):
@@ -87,5 +87,5 @@ class Player(object):
 
 		#rotImage = pygame.transform.rotate(self.image, -self.angle)
 
-		self.location = screen.blit(rotatedSurf, rotRect)
+		self.position = screen.blit(rotatedSurf, rotRect)
 		#screen.blit(rotImage, rotRect)
