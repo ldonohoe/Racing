@@ -14,14 +14,20 @@ class Player(object):
 		self.screenWidth = screen.get_width()
 		self.screenHeight = screen.get_height()
 		self.position = self.rect
+		self.inertia = 1
 
 
 	def update_player(self):
+		# Check movement
+		self.intertia = abs(self.velocity)/15
+
+		# Update Location
 		dX = cos(radians(self.angle)) * self.velocity
 		dY = sin(radians(self.angle)) * self.velocity
 		self.x += dX
 		self.y += dY
 
+		# Edge detection
 		if self.x < 0:
 			self.x = 0
 			self.velocity = 0
@@ -35,11 +41,13 @@ class Player(object):
 			self.y = self.screenHeight
 			self.velocity = 0
 
+		# Handle angle
 		if self.angle >= 360:
 			self.angle -= 360
 		if self.angle < 0:
 			self.angle += 360
 
+		# Slow Down
 		if self.velocity != 0:
 			if self.velocity < 0:
 				self.velocity +=1
@@ -50,11 +58,13 @@ class Player(object):
 		key = pygame.key.get_pressed()
 		if key[pygame.K_LEFT]:
 			# Rotate Left
-			self.angle += -3 * self.direction
+			turn = -3 * self.intertia
+			self.angle += turn * self.direction
 
 		if key[pygame.K_RIGHT]:
 			#Rotate right
-			self.angle += 3 * self.direction
+			turn = 3 * self.intertia
+			self.angle += turn * self.direction
 
 		if key[pygame.K_UP]:
 			if abs(self.velocity) < 15:
