@@ -27,6 +27,9 @@ class Player(pygame.sprite.Sprite):
 		self.inertia = 1 # Prevents turning in place, makes things more realistic
 		self.friction = 1 # Normal on road, 0.5 on grass
 
+		self.maxSpeed = 25
+		self.minSpeed = -10
+
 
 	def update_player(self):
 		# Check movement
@@ -35,7 +38,6 @@ class Player(pygame.sprite.Sprite):
 		# Get new Location
 		dX = cos(radians(self.angle)) * self.velocity
 		dY = sin(radians(self.angle)) * self.velocity
-
 
 		self.x += dX
 
@@ -70,14 +72,24 @@ class Player(pygame.sprite.Sprite):
 			self.angle += turn * self.direction
 
 		if key[pygame.K_UP]:
-			if abs(self.velocity) < 10:
+			if abs(self.velocity) < self.maxSpeed:
 				self.velocity += 2
 				self.direction = 1
 		if key[pygame.K_DOWN]:
-			if abs(self.velocity) < 10:
+			if self.velocity > self.minSpeed:
 				self.velocity -= 2
 				self.direction = -1
-		
+		if key[pygame.K_LSHIFT]: # a sort of boost 
+			self.maxSpeed = 35
+		else:
+			self.maxSpeed = 25
+		if key[pygame.K_SPACE]:
+			# Handbrake
+			
+			if self.velocity > 0:
+				self.velocity -= 5
+			else:
+				self.velocity += 5
 
 """
 	def draw(self, screen):
