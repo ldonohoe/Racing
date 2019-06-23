@@ -26,7 +26,7 @@ class Traffic(pygame.sprite.Sprite):
 		self.angle = 0
 		self.inertia = 1
 		self.destination = None
-		self.maxSpeed = randint(3, 15)
+		self.maxSpeed = randint(10, 30)
 
 
 	def update(self):
@@ -65,4 +65,5 @@ class Traffic(pygame.sprite.Sprite):
 		# Follow path
 
 		accel = randint(0, 5)
-		self.velocity += accel
+		if self.velocity < self.maxSpeed:
+			self.velocity += accel

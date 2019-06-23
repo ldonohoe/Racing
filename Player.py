@@ -2,6 +2,8 @@ import pygame
 from math import *
 from pygame.locals import *
 
+GRASS = 200
+
 
 def rot_center(image, rect, angle):
         """rotate an image while keeping its center"""
@@ -10,13 +12,14 @@ def rot_center(image, rect, angle):
         return rot_image,rot_rect
 
 class Player(pygame.sprite.Sprite):
+
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		self.x = int(pygame.display.Info().current_w /2)
 		self.y = int(pygame.display.Info().current_h /2)
 		self.velocity = 0
 		self.direction = 1
-		self.image = pygame.image.load('resources/racecar.png')
+		self.image = pygame.image.load('resources/blue_car.png')
 		colorkey = self.image.get_at((0,0))
 		self.image.set_colorkey(colorkey, RLEACCEL)
 		self.image_orig = self.image
@@ -29,15 +32,24 @@ class Player(pygame.sprite.Sprite):
 
 		self.maxSpeed = 25
 		self.minSpeed = -10
+		self.boost = 50.0
 
+		self.drifting = 0
+		self.momentum = 0
 
-	def update_player(self):
+	def update_player(self, ground):
 		# Check movement
 		self.inertia = abs(self.velocity)/10
+		if ground[1] >= GRASS:
+			self.maxSpeed = 16
+			if self.velocity > self.maxSpeed:
+				self.velocity = self.maxSpeed
+		else:
+			self.maxSpeed = 25
 
 		# Get new Location
-		dX = cos(radians(self.angle)) * self.velocity
-		dY = sin(radians(self.angle)) * self.velocity
+		dX = cos(radians(self.angle)) * (self.velocity)
+		dY = sin(radians(self.angle)) * (self.velocity)
 
 		self.x += dX
 
@@ -55,7 +67,6 @@ class Player(pygame.sprite.Sprite):
 				self.velocity +=1
 			else:
 				self.velocity -=1
-
 		self.image, self.rect = rot_center(self.image_orig, self.rect, -self.angle)
 
 
@@ -80,9 +91,16 @@ class Player(pygame.sprite.Sprite):
 				self.velocity -= 2
 				self.direction = -1
 		if key[pygame.K_LSHIFT]: # a sort of boost 
-			self.maxSpeed = 35
+			if self.boost > 0:
+				if self.maxSpeed <= 25:
+					self.maxSpeed += 10
+				self.boost -= 1
+				if self.velocity < self.maxSpeed:
+					self.velocity += 5
 		else:
 			self.maxSpeed = 25
+			if self.boost < 50.0:
+				self.boost += 0.3
 		if key[pygame.K_SPACE]:
 			# Handbrake
 			
@@ -90,6 +108,17 @@ class Player(pygame.sprite.Sprite):
 				self.velocity -= 5
 			else:
 				self.velocity += 5
+		if key[pygame.K_LCTRL]:
+			self.drifting = 1
+			self.friction = 0.5
+		else:
+			self.drifting = 0
+			self.friction = 1
+
+	#	Creates a bar representing the level of boost remaining
+	def boostBar(self):
+		boost = pygame.Rect(pygame.display.Info().current_w - 200, pygame.display.Info().current_h - 75, self.boost * 3, 20)
+		return boost
 
 """
 	def draw(self, screen):

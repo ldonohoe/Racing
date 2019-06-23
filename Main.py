@@ -10,8 +10,7 @@ def init(screen):
 
 	screen.fill(WHITE)
 
-	start = pygame.Rect(200, 200, 300, 200)
-	pygame.draw.rect(screen, (255, 0, 0), start)
+	title = pygame.image.load('resources/Title.png')
 
 	done = False
 	while not done:
@@ -24,7 +23,9 @@ def init(screen):
 				print("Unclicked")
 				game(screen)
 
-		pygame.draw.rect(screen, (255, 0, 0), start)
+
+		screen.blit(title, pygame.Rect(0, 0, 1000, 1000))
+
 
 
 
@@ -43,8 +44,10 @@ def game(screen):
 	camera = Camera()
 
 
-	player_s 	= pygame.sprite.Group()
-	map_s 		= pygame.sprite.Group()
+	player_s 	= pygame.sprite.Group() # Handles player movements and updates
+	map_s 		= pygame.sprite.Group() # Handles map movements
+	traffic_s 	= pygame.sprite.Group()
+	police_s 	= pygame.sprite.Group()
 
 
 	# Load map files
@@ -59,6 +62,8 @@ def game(screen):
 	player_s.add(player)
 	camera.setCam(player.x, player.y)
 
+	w_center = int(pygame.display.Info().current_w/2)
+	h_center = int(pygame.display.Info().current_h/2)
 
 	while not done:
 		for event in pygame.event.get(): # User did something
@@ -68,12 +73,15 @@ def game(screen):
 		screen.blit(background, (0,0))
 
 
-		player.handle_keys()	
-		player.update_player()
-		camera.setCam(player.x, player.y)
-
 		map_s.update(camera.x, camera.y)
 		map_s.draw(screen)
+
+		# Check driving surface
+		carGround = screen.get_at((w_center, h_center))
+		player.handle_keys()	
+		player.update_player(carGround)
+		camera.setCam(player.x, player.y)
+
 
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)
@@ -82,20 +90,27 @@ def game(screen):
 		text_fps = font.render('FPS: ' + str(int(clock.get_fps())), 1, (224, 16, 16))
 		textpos_fps = text_fps.get_rect(centery=25, centerx=60)
 		screen.blit(text_fps, textpos_fps)
+		
+		text_boost = font.render('BOOST: ', 1, (0, 0, 250))
+		textpos_boost = text_boost.get_rect(centery=pygame.display.Info().current_h-65, centerx=pygame.display.Info().current_w-235)
+		screen.blit(text_boost, textpos_boost)
+		pygame.draw.rect(screen, (0, 0, 250), player.boostBar())
 
+		text_speed = font.render("SPEED: " + str(player.velocity), 1, (224, 16, 16))
+		textpos_speed = text_speed.get_rect(centery=40, centerx=60)
+		screen.blit(text_speed, textpos_speed)
 
 
 
 		pygame.display.flip()
 
-		clock.tick(64)
+		clock.tick(50)
 
 
 def main():
-	size = width, height = 800, 800
 	pygame.init()
 	screen = pygame.display.set_mode((pygame.display.Info().current_w,
-                                  pygame.display.Info().current_h), pygame.FULLSCREEN)
+                                  pygame.display.Info().current_h))
 	init(screen)
 
 if __name__ == '__main__':
