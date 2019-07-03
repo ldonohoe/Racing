@@ -2,6 +2,8 @@ import pygame, Map
 from math import *
 from Player import Player
 from Camera import Camera
+from Traffic import Traffic
+from Police import Police
 
 def init(screen):
 	pygame.init()
@@ -49,6 +51,10 @@ def game(screen):
 	traffic_s 	= pygame.sprite.Group()
 	police_s 	= pygame.sprite.Group()
 
+	for i in range(0, 5):
+		traffic_s.add(Traffic())
+		police_s.add(Police())
+
 
 	# Load map files
 	for tile in range(0, len(Map.map_tiles)):
@@ -82,9 +88,14 @@ def game(screen):
 		player.update_player(carGround)
 		camera.setCam(player.x, player.y)
 
-
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)
+
+		traffic_s.update(camera.x, camera.y)
+		traffic_s.draw(screen)
+
+		police_s.update(camera.x, camera.y)
+		police_s.draw(screen)
 
 
 		text_fps = font.render('FPS: ' + str(int(clock.get_fps())), 1, (224, 16, 16))

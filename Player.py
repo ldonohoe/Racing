@@ -2,7 +2,7 @@ import pygame
 from math import *
 from pygame.locals import *
 
-GRASS = 200
+GRASS = 230
 
 
 def rot_center(image, rect, angle):
@@ -26,11 +26,13 @@ class Player(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.topleft = self.x, self.y
 		self.angle = 0
+		self.angularVelocity = 0
+		self.angularDrag = 0.65
 		self.velocity = 0
 		self.inertia = 1 # Prevents turning in place, makes things more realistic
 		self.friction = 1 # Normal on road, 0.5 on grass
 
-		self.maxSpeed = 25
+		self.maxSpeed = 30
 		self.minSpeed = -10
 		self.boost = 50.0
 
@@ -40,7 +42,7 @@ class Player(pygame.sprite.Sprite):
 	def update_player(self, ground):
 		# Check movement
 		self.inertia = abs(self.velocity)/10
-		if ground[1] >= GRASS:
+		if ground[1] == GRASS:
 			self.maxSpeed = 16
 			if self.velocity > self.maxSpeed:
 				self.velocity = self.maxSpeed
@@ -55,6 +57,9 @@ class Player(pygame.sprite.Sprite):
 
 		self.y += dY
 
+		self.angle += self.angularVelocity
+		self.angularVelocity *= self.angularDrag
+
 		# Handle angle
 		if self.angle >= 360:
 			self.angle -= 360
@@ -67,6 +72,12 @@ class Player(pygame.sprite.Sprite):
 				self.velocity +=1
 			else:
 				self.velocity -=1
+
+		if self.angularVelocity != 0:
+			if self.angularVelocity > 0:
+				self.angularVelocity -= 1
+			else:
+				self.angularVelocity += 1
 		self.image, self.rect = rot_center(self.image_orig, self.rect, -self.angle)
 
 
@@ -74,13 +85,13 @@ class Player(pygame.sprite.Sprite):
 		key = pygame.key.get_pressed()
 		if key[pygame.K_LEFT]:
 			# Rotate Left
-			turn = -3 * self.inertia
-			self.angle += turn * self.direction
+			turn = -2 * self.inertia
+			self.angularVelocity += turn * self.direction
 
 		if key[pygame.K_RIGHT]:
 			#Rotate right
-			turn = 3 * self.inertia
-			self.angle += turn * self.direction
+			turn = 2 * self.inertia
+			self.angularVelocity += turn * self.direction
 
 		if key[pygame.K_UP]:
 			if abs(self.velocity) < self.maxSpeed:
@@ -88,7 +99,7 @@ class Player(pygame.sprite.Sprite):
 				self.direction = 1
 		if key[pygame.K_DOWN]:
 			if self.velocity > self.minSpeed:
-				self.velocity -= 2
+				self.velocity += -2
 				self.direction = -1
 		if key[pygame.K_LSHIFT]: # a sort of boost 
 			if self.boost > 0:

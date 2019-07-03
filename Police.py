@@ -1,4 +1,7 @@
-import random
+import pygame
+from random import *
+from pygame.locals import *
+from math import *
 
 def rot_center(image, rect, angle):
         """rotate an image while keeping its center"""
@@ -9,7 +12,8 @@ def rot_center(image, rect, angle):
 class Police(pygame.sprite.Sprite):
 
 	def __init__(self):
-		self.image = pygame.image.load('police_car.png')
+		pygame.sprite.Sprite.__init__(self)
+		self.image = pygame.image.load('resources/police_car.png')
 		colorkey = self.image.get_at((0,0))
 		self.image.set_colorkey(colorkey, RLEACCEL)
 		self.image_orig = self.image
@@ -23,8 +27,11 @@ class Police(pygame.sprite.Sprite):
 		self.inertia = 1
 	#	Updates the police's location, if it is after a target,
 	#	
-	def update(self, target):
+	def update(self, x, y):
 		# Check movement
+
+		self.velocity += randint(-3, 3)
+		self.angle += randint(-5, 5)
 		self.inertia = abs(self.velocity)/10
 
 		# Get new Location
@@ -49,3 +56,5 @@ class Police(pygame.sprite.Sprite):
 				self.velocity -=1
 
 		self.image, self.rect = rot_center(self.image_orig, self.rect, -self.angle)
+
+		self.rect.topleft = self.x - x, self.y - y
