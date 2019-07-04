@@ -90,7 +90,7 @@ def game(screen):
 
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)
-
+		
 		traffic_s.update(camera.x, camera.y)
 		traffic_s.draw(screen)
 

@@ -1,11 +1,17 @@
-import random, pygame
+import random, pygame, Map
 from pygame.locals import *
 from random import *
 from math import *
 
 
-cars = ['red_car.png', 'green_car.png', 'black_car.png', 'purple_car.png', 'orange_car.png']
+car_files = ['red_car.png', 'green_car.png', 'black_car.png', 'purple_car.png', 'orange_car.png']
+cars = []
+
 GRASS = 230
+CENTERW = -1
+CENTERH = -1
+
+
 
 def rot_center(image, rect, angle):
         """rotate an image while keeping its center"""
@@ -13,27 +19,26 @@ def rot_center(image, rect, angle):
         rot_rect = rot_image.get_rect(center=rect.center)
         return rot_image,rot_rect
 
+def initTraf(centerW, centerH):
+	CENTERW = centerW
+	CENTERH = centerH
+
 class Traffic(pygame.sprite.Sprite):
 
-	def __init__(self):
-		pygame.sprite.Sprite.__init__(self)
-		carNum = randint(0, 4)
-		self.image = pygame.image.load('resources/' + cars[carNum])
-		colorkey = self.image.get_at((0,0))
-		self.image.set_colorkey(colorkey, RLEACCEL)
-		self.image_orig = self.image
-		self.screen = pygame.display.get_surface()
-		self.area = self.screen.get_rect()
-		self.x = 500
-		self.y = 500
-		self.direction = 0
-		self.velocity = randint(1, 10)
-		self.rect = self.image.get_rect()
-		self.rect.topleft = self.x, self.y
-		self.angle = 0
-		self.inertia = 1
-		self.destination = None
-		self.maxSpeed = randint(10, 30)
+	def getSpawn(self):
+		# Get random coordinates in the map tiles
+		x = randint(0, 9)
+		y = randint(0, 9)
+
+		while(Map.map_1[x][y] == 5):
+			x = randint(0, 9)
+			y = randint(0, 9)
+
+		return (x * 1000) + 500, (y * 1000) + 500
+
+
+	def getTile(self):
+		return Map.map_1[int((self.y + CENTERH) / 1000)][int((self.x + CENTERW) / 1000)]
 
 
 	def update(self, x, y):
@@ -87,4 +92,23 @@ class Traffic(pygame.sprite.Sprite):
 		accel = randint(0, 5)
 		if self.velocity < self.maxSpeed:
 			self.velocity += accel
+
+	def __init__(self):
+		pygame.sprite.Sprite.__init__(self)
+		carNum = randint(0, 4)
+		self.image = pygame.image.load('resources/' + car_files[carNum])
+		colorkey = self.image.get_at((0,0))
+		self.image.set_colorkey(colorkey, RLEACCEL)
+		self.image_orig = self.image
+		self.screen = pygame.display.get_surface()
+		self.area = self.screen.get_rect()
+		self.x, self.y = self.getSpawn()
+		self.direction = 0
+		self.velocity = randint(1, 10)
+		self.rect = self.image.get_rect()
+		self.rect.topleft = self.x, self.y
+		self.angle = 0
+		self.inertia = 1
+		self.destination = None
+		self.maxSpeed = randint(10, 30)
 
