@@ -1,8 +1,11 @@
-import pygame
+import pygame, Map
 from math import *
 from pygame.locals import *
+from random import *
 
 GRASS = 230
+CENTERX = -1
+CENTERY = -1
 
 
 def rot_center(image, rect, angle):
@@ -13,10 +16,28 @@ def rot_center(image, rect, angle):
 
 class Player(pygame.sprite.Sprite):
 
+	def getSpawn(self):
+		# Get random coordinates in the map tiles
+		x = randint(0, 9)
+		y = randint(0, 9)
+
+		while(Map.map_1[x][y] == 5):
+			x = randint(0, 9)
+			y = randint(0, 9)
+
+		return (x * 1000) + CENTERX, (y * 1000) + CENTERY
+
+	def getTile(self):
+		return (int((self.y + CENTERY) / 1000)), (int((self.x + CENTERX	) / 1000))
+
+
+
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
-		self.x = int(pygame.display.Info().current_w /2)
-		self.y = int(pygame.display.Info().current_h /2)
+		CENTERX = int(pygame.display.Info().current_w / 2)
+		CENTERY = int(pygame.display.Info().current_h / 2)
+		self.x = CENTERX
+		self.y = CENTERY
 		self.velocity = 0
 		self.direction = 1
 		self.image = pygame.image.load('resources/blue_car.png')
@@ -25,6 +46,7 @@ class Player(pygame.sprite.Sprite):
 		self.image_orig = self.image
 		self.rect = self.image.get_rect()
 		self.rect.topleft = self.x, self.y
+		self.x, self.y = self.getSpawn()
 		self.angle = 0
 		self.angularVelocity = 0
 		self.angularDrag = 0.65
@@ -40,6 +62,8 @@ class Player(pygame.sprite.Sprite):
 		self.momentum = 0
 
 	def update_player(self, ground):
+
+		print (self.getTile())
 		# Check movement
 		self.inertia = abs(self.velocity)/10
 		if ground[1] == GRASS:

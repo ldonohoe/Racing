@@ -2,15 +2,11 @@ import pygame, Map
 from math import *
 from Player import Player
 from Camera import Camera
-from Traffic import Traffic
+from Traffic import *
 from Police import Police
 
 def init(screen):
 	pygame.init()
-	RED = (255, 0, 0)
-	WHITE = (255, 255, 255)
-
-	screen.fill(WHITE)
 
 	title = pygame.image.load('resources/Title.png')
 
@@ -71,6 +67,8 @@ def game(screen):
 	w_center = int(pygame.display.Info().current_w/2)
 	h_center = int(pygame.display.Info().current_h/2)
 
+	initTraf(w_center, h_center)
+
 	while not done:
 		for event in pygame.event.get(): # User did something
 			if event.type == pygame.QUIT: # If user clicked close
@@ -90,7 +88,7 @@ def game(screen):
 
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)
-		
+
 		traffic_s.update(camera.x, camera.y)
 		traffic_s.draw(screen)
 

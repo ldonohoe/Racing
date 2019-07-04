@@ -10,6 +10,7 @@ cars = []
 GRASS = 230
 CENTERW = -1
 CENTERH = -1
+DIRECTIONS = [0, 90, 180, 270]
 
 
 
@@ -22,6 +23,7 @@ def rot_center(image, rect, angle):
 def initTraf(centerW, centerH):
 	CENTERW = centerW
 	CENTERH = centerH
+
 
 class Traffic(pygame.sprite.Sprite):
 
