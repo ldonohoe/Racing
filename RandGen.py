@@ -21,8 +21,6 @@ def genMap():
 			print(newList)
 		newMap.append(newList)
 
-
-
 	return newMap
 
 
@@ -31,7 +29,7 @@ def isValid(x, y, val, newMap, newList):
 		# Ensure that no adjacent is G (5) 
 		# Will not allow roads to nowhere
 		# Rotation does not affect X
-		if (x==0 or y==0 or x == 9 or y == 9):
+		if (x==0 or y==0 or x==9 or y==9):
 			return -1
 		if len(newMap) > 0 and newMap[x-1][y] == G:
 			return -1

@@ -1,3 +1,4 @@
+
 import pygame, Map
 from math import *
 from Player import Player
@@ -22,7 +23,7 @@ def init(screen):
 				game(screen)
 
 
-		screen.blit(title, pygame.Rect(0, 0, 1000, 1000))
+		screen.blit(title, pygame.Rect(0, 0, 500, 250))
 
 
 
@@ -36,9 +37,11 @@ def game(screen):
 	font = pygame.font.Font(None, 24)
 
 
+	force_spawn=(1, 1)
+
 	done = False
 	clock = pygame.time.Clock()
-	player = Player()
+	player = Player(force_spawn)
 	camera = Camera()
 
 
@@ -48,9 +51,9 @@ def game(screen):
 	police_s 	= pygame.sprite.Group()
 
 	for i in range(0, 5):
-		traffic_s.add(Traffic())
 		police_s.add(Police())
-
+	traf = Traffic(force_spawn)
+	traffic_s.add(traf)
 
 	# Load map files
 	for tile in range(0, len(Map.map_tiles)):
@@ -62,7 +65,7 @@ def game(screen):
 
 
 	player_s.add(player)
-	camera.setCam(player.x, player.y)
+	camera.setCam(traf.x, traf.y)
 
 	w_center = int(pygame.display.Info().current_w/2)
 	h_center = int(pygame.display.Info().current_h/2)
@@ -84,7 +87,7 @@ def game(screen):
 		carGround = screen.get_at((w_center, h_center))
 		player.handle_keys()	
 		player.update_player(carGround)
-		camera.setCam(player.x, player.y)
+		camera.setCam(traf.x, traf.y)
 
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)

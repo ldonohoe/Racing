@@ -11,6 +11,7 @@ GRASS = 230
 CENTERW = -1
 CENTERH = -1
 DIRECTIONS = [0, 90, 180, 270]
+SCREEN = None
 
 
 
@@ -24,38 +25,34 @@ def initTraf(centerW, centerH):
 	CENTERW = centerW
 	CENTERH = centerH
 
-
 class Traffic(pygame.sprite.Sprite):
 
-	def getSpawn(self):
+	def getSpawn(self, x=-1, y=-1):
 		# Get random coordinates in the map tiles
-		x = randint(0, 9)
-		y = randint(0, 9)
+
+		x = x if x > 0 else randint(0, 9)
+		y = y if y > 0 else randint(0, 9)
 
 		while(Map.map_1[x][y] == 5):
 			x = randint(0, 9)
 			y = randint(0, 9)
 
+		print("Traffic Spawn: ", (x,y))
+
 		return (x * 1000) + 500, (y * 1000) + 500
 
 
 	def getTile(self):
-		return Map.map_1[int((self.y + CENTERH) / 1000)][int((self.x + CENTERW) / 1000)]
+
+		try:
+			return Map.map_1[int((self.y + CENTERH) / 1000)][int((self.x + CENTERW) / 1000)]
+
+		except:
+			return -1
 
 
 	def update(self, x, y):
-		# TODO: ADD GRASS PHYSICS
-		"""
-		if grass[1] == GRASS:
-			self.maxSpeed = 16
-			if self.velocity > self.maxSpeed:
-				self.velocity = self.maxSpeed
-		else:
-			self.maxSpeed = 25
-		"""
-		# Currently for testing, randomly add speed and turning
-		self.velocity += randint(-2, 2)
-		self.angle += randint(-5, 5)
+		self.drive(self.getTile())
 		self.inertia = abs(self.velocity)/10
 
 		# Get new Location
@@ -91,11 +88,39 @@ class Traffic(pygame.sprite.Sprite):
 		# Pathfind to destination
 
 		# Follow path
-		accel = randint(0, 5)
+		#print(self.tile)
+		if self.tile != self.getTile(): # Driven into a new tile, change goal direction, update own tile
+			print(f"New Tile: {self.getTile()}")
+			self.goalAngle = self.path.pop()
+			self.tile = self.getTile()
+		# Otherwise, continue driving through current tile
+		angle_dif = self.angle - self.goalAngle
+		if angle_dif > 3:
+			self.angle -= 2
+		elif angle_dif < -3:
+			self.angle += 2
+		accel = randint(0, 3)
+		if randint(0, 10) > 9:
+			accel = -accel
 		if self.velocity < self.maxSpeed:
 			self.velocity += accel
 
-	def __init__(self):
+	def getDest(self):
+		# Get random coordinates in the map tiles
+		x = randint(0, 9)
+		y = randint(0, 9)
+
+		while(Map.map_1[x][y] != 4):
+			x = randint(0, 9)
+			y = randint(0, 9)
+
+		print((x,y))
+
+		return (x,y)
+
+
+
+	def __init__(self, spawn=None):
 		pygame.sprite.Sprite.__init__(self)
 		carNum = randint(0, 4)
 		self.image = pygame.image.load('resources/' + car_files[carNum])
@@ -104,13 +129,20 @@ class Traffic(pygame.sprite.Sprite):
 		self.image_orig = self.image
 		self.screen = pygame.display.get_surface()
 		self.area = self.screen.get_rect()
-		self.x, self.y = self.getSpawn()
+		if spawn:
+			self.x, self.y = spawn
+		else:
+			self.x, self.y = self.getSpawn()
 		self.direction = 0
 		self.velocity = randint(1, 10)
 		self.rect = self.image.get_rect()
 		self.rect.topleft = self.x, self.y
 		self.angle = 0
 		self.inertia = 1
-		self.destination = None
-		self.maxSpeed = randint(10, 30)
+		self.destination = self.getDest()
+		self.maxSpeed = randint(10, 20)
+		self.tile = self.getTile()
+
+		self.path = [0, 90, 0, 180, 0, 90, 0, 0, 0, 90, 180, 90, 180, 38] # List of directions to get to destination
+		self.goalAngle = self.path[0]
 

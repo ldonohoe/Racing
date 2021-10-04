@@ -32,7 +32,7 @@ class Player(pygame.sprite.Sprite):
 
 
 
-	def __init__(self):
+	def __init__(self, spawn=None):
 		pygame.sprite.Sprite.__init__(self)
 		CENTERX = int(pygame.display.Info().current_w / 2)
 		CENTERY = int(pygame.display.Info().current_h / 2)
@@ -46,7 +46,10 @@ class Player(pygame.sprite.Sprite):
 		self.image_orig = self.image
 		self.rect = self.image.get_rect()
 		self.rect.topleft = self.x, self.y
-		self.x, self.y = self.getSpawn()
+		if spawn:
+			self.x, self.y = spawn
+		else:
+			self.x, self.y = self.getSpawn()
 		self.angle = 0
 		self.angularVelocity = 0
 		self.angularDrag = 0.65
@@ -63,7 +66,6 @@ class Player(pygame.sprite.Sprite):
 
 	def update_player(self, ground):
 
-		print (self.getTile())
 		# Check movement
 		self.inertia = abs(self.velocity)/10
 		if ground[1] == GRASS:
