@@ -79,9 +79,22 @@ class Player(pygame.sprite.Sprite):
 		dX = cos(radians(self.angle)) * (self.velocity)
 		dY = sin(radians(self.angle)) * (self.velocity)
 
-		self.x += dX
+		next_x = self.x + dX
+		next_y = self.y + dY
+		print(f"{next_x}, {next_y}")
+		if next_x + self.rect.height < -1000:
+			self.x = -1000
+		elif next_x - self.rect.height > 9000:
+			self.x = 9000
+		else: 
+			self.x = next_x
 
-		self.y += dY
+		if next_y + self.rect.width < -500:
+			self.y = -500
+		elif next_y - self.rect.width > 9500:
+			self.y = 9500
+		else:
+			self.y = next_y
 
 		self.angle += self.angularVelocity
 		self.angularVelocity *= self.angularDrag
@@ -157,7 +170,7 @@ class Player(pygame.sprite.Sprite):
 		boost = pygame.Rect(pygame.display.Info().current_w - 200, pygame.display.Info().current_h - 75, self.boost * 3, 20)
 		return boost
 
-"""
+
 	def draw(self, screen):
 		surf = pygame.Surface((30, 15))
 		surf.fill((255, 255, 255))
@@ -180,4 +193,3 @@ class Player(pygame.sprite.Sprite):
 
 		self.position = screen.blit(rotatedSurf, rotRect)
 		#screen.blit(rotImage, rotRect)
-"""

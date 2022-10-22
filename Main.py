@@ -22,8 +22,8 @@ def init(screen):
 				print("Unclicked")
 				game(screen)
 
-
 		screen.blit(title, pygame.Rect(0, 0, 500, 250))
+		pygame.display.flip()
 
 
 
@@ -65,12 +65,12 @@ def game(screen):
 
 
 	player_s.add(player)
-	camera.setCam(traf.x, traf.y)
+	camera.setCam(player.x, player.y)
 
 	w_center = int(pygame.display.Info().current_w/2)
 	h_center = int(pygame.display.Info().current_h/2)
 
-	initTraf(w_center, h_center)
+	# initTraf(w_center, h_center)
 
 	while not done:
 		for event in pygame.event.get(): # User did something
@@ -87,7 +87,7 @@ def game(screen):
 		carGround = screen.get_at((w_center, h_center))
 		player.handle_keys()	
 		player.update_player(carGround)
-		camera.setCam(traf.x, traf.y)
+		camera.setCam(player.x, player.y)
 
 		player_s.update(camera.x, camera.y)
 		player_s.draw(screen)
@@ -111,8 +111,6 @@ def game(screen):
 		text_speed = font.render("SPEED: " + str(player.velocity), 1, (224, 16, 16))
 		textpos_speed = text_speed.get_rect(centery=40, centerx=60)
 		screen.blit(text_speed, textpos_speed)
-
-
 
 		pygame.display.flip()
 
