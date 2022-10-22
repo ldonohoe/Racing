@@ -45,24 +45,37 @@ class Traffic(pygame.sprite.Sprite):
 	def getTile(self):
 
 		try:
-			return Map.map_1[int((self.y + CENTERH) / 1000)][int((self.x + CENTERW) / 1000)]
+			map_x = int((self.y + CENTERH) / 1000)
+			map_y = int((self.x + CENTERW) / 1000)
+			print(f"location: {map_x}, {map_y}")
+			return map_x, map_y, Map.map_1[map_x][map_y]
 
 		except:
 			return -1
 
 
 	def update(self, x, y):
-		self.drive(self.getTile())
+		tile_x, tile_y, tile_type = self.getTile()
+		if tile_x < 0 or tile_y < 0 or tile_type == -1:
+			self.reset()
+		self.drive(tile_type)
 		self.inertia = abs(self.velocity)/10
 
 		# Get new Location
 		dX = cos(radians(self.angle)) * self.velocity
 		dY = sin(radians(self.angle)) * self.velocity
 
+		next_x = self.x + dX
+		next_y = self.y + dY
+		if next_x < 0 or next_x > 9000:
+			self.x = 0
+		else: 
+			self.x = next_x
 
-		self.x += dX
-
-		self.y += dY
+		if next_y < 0 or next_y > 9000:
+			self.y = 0 
+		else:
+			self.y = next_y
 
 		# Handle angle
 		if self.angle >= 360:
@@ -91,7 +104,11 @@ class Traffic(pygame.sprite.Sprite):
 		#print(self.tile)
 		if self.tile != self.getTile(): # Driven into a new tile, change goal direction, update own tile
 			print(f"New Tile: {self.getTile()}")
-			self.goalAngle = self.path.pop()
+			self.angleIndex += 1
+			if self.angleIndex > 3:
+				self.angleIndex = 0
+			self.goalAngle = DIRECTIONS[self.angleIndex]
+			print(f"New angle: {self.goalAngle}")
 			self.tile = self.getTile()
 		# Otherwise, continue driving through current tile
 		angle_dif = self.angle - self.goalAngle
@@ -118,31 +135,36 @@ class Traffic(pygame.sprite.Sprite):
 
 		return (x,y)
 
-
+	def reset(self):
+		self.__init__(spawn=self.spawnLocation)
 
 	def __init__(self, spawn=None):
 		pygame.sprite.Sprite.__init__(self)
+		CENTERX = int(pygame.display.Info().current_w / 2)
+		CENTERY = int(pygame.display.Info().current_h / 2)
+		self.x = CENTERX
+		self.y = CENTERY
+
 		carNum = randint(0, 4)
 		self.image = pygame.image.load('resources/' + car_files[carNum])
 		colorkey = self.image.get_at((0,0))
 		self.image.set_colorkey(colorkey, RLEACCEL)
 		self.image_orig = self.image
+		self.rect = self.image.get_rect()
+		self.rect.topleft = self.x, self.y
 		self.screen = pygame.display.get_surface()
 		self.area = self.screen.get_rect()
 		if spawn:
 			self.x, self.y = spawn
 		else:
 			self.x, self.y = self.getSpawn()
+		self.spawnLocation = self.x, self.y
 		self.direction = 0
 		self.velocity = randint(1, 10)
-		self.rect = self.image.get_rect()
-		self.rect.topleft = self.x, self.y
 		self.angle = 0
 		self.inertia = 1
 		self.destination = self.getDest()
 		self.maxSpeed = randint(10, 20)
 		self.tile = self.getTile()
-
-		self.path = [0, 90, 0, 180, 0, 90, 0, 0, 0, 90, 180, 90, 180, 38] # List of directions to get to destination
-		self.goalAngle = self.path[0]
-
+		self.angleIndex = 0
+		self.goalAngle = 0
