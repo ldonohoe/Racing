@@ -14,7 +14,7 @@ def rot_center(image, rect, angle):
         rot_rect = rot_image.get_rect(center=rect.center)
         return rot_image,rot_rect
 
-class Player(pygame.sprite.Sprite):
+class Car(pygame.sprite.Sprite):
 
 	def getSpawn(self):
 		# Get random coordinates in the map tiles
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
 		self.drifting = 0
 		self.momentum = 0
 
-	def update_player(self, ground):
+	def update_car(self, ground):
 
 		# Check movement
 		self.inertia = abs(self.velocity)/10
@@ -79,22 +79,9 @@ class Player(pygame.sprite.Sprite):
 		dX = cos(radians(self.angle)) * (self.velocity)
 		dY = sin(radians(self.angle)) * (self.velocity)
 
-		next_x = self.x + dX
-		next_y = self.y + dY
-		print(f"{next_x}, {next_y}")
-		if next_x + self.rect.height < -1000:
-			self.x = -1000
-		elif next_x - self.rect.height > 9000:
-			self.x = 9000
-		else: 
-			self.x = next_x
+		self.x += dX
 
-		if next_y + self.rect.width < -500:
-			self.y = -500
-		elif next_y - self.rect.width > 9500:
-			self.y = 9500
-		else:
-			self.y = next_y
+		self.y += dY
 
 		self.angle += self.angularVelocity
 		self.angularVelocity *= self.angularDrag
@@ -170,7 +157,7 @@ class Player(pygame.sprite.Sprite):
 		boost = pygame.Rect(pygame.display.Info().current_w - 200, pygame.display.Info().current_h - 75, self.boost * 3, 20)
 		return boost
 
-
+"""
 	def draw(self, screen):
 		surf = pygame.Surface((30, 15))
 		surf.fill((255, 255, 255))
@@ -193,3 +180,4 @@ class Player(pygame.sprite.Sprite):
 
 		self.position = screen.blit(rotatedSurf, rotRect)
 		#screen.blit(rotImage, rotRect)
+"""
