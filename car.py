@@ -14,7 +14,7 @@ def rot_center(image, rect, angle):
         rot_rect = rot_image.get_rect(center=rect.center)
         return rot_image,rot_rect
 
-class Player(pygame.sprite.Sprite):
+class Car(pygame.sprite.Sprite):
 
 	def getSpawn(self):
 		# Get random coordinates in the map tiles
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
 		self.drifting = 0
 		self.momentum = 0
 
-	def update_player(self, ground):
+	def update_car(self, ground):
 
 		# Check movement
 		self.inertia = abs(self.velocity)/10
